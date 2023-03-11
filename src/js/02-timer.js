@@ -6,8 +6,9 @@ const options = {
   time_24hr: true,
   defaultDate: new Date(),
   minuteIncrement: 1,
-  onClose(selectedDates) {
-    if (selectedDates[0] <= Date.now()) {
+  onClose([selectedDates]) {
+    if (selectedDates <= Date.now()) {
+      refs.start.setAttribute('disabled', true);
       return alert('Please choose a date in the future');
     }
     refs.start.removeAttribute('disabled');
@@ -27,46 +28,6 @@ const refs = {
 };
 
 refs.start.setAttribute('disabled', true);
-refs.start.style.borderRadius = '3px';
-
-refs.day.style.padding = '10px';
-refs.day.style.width = '50px';
-refs.day.style.borderRadius = '50%';
-refs.day.style.background = 'blue';
-refs.day.style.display = 'flex';
-refs.day.style.marginTop = '20px';
-refs.day.style.flexDirection = 'column';
-
-refs.hour.style.padding = '10px';
-refs.hour.style.width = '50px';
-refs.hour.style.borderRadius = '50%';
-refs.hour.style.background = 'yellow';
-refs.hour.style.display = 'flex';
-refs.hour.style.marginTop = '20px';
-refs.hour.style.flexDirection = 'column';
-
-refs.minute.style.padding = '10px';
-refs.minute.style.width = '50px';
-refs.minute.style.borderRadius = '50%';
-refs.minute.style.background = 'red';
-refs.minute.style.display = 'flex';
-refs.minute.style.marginTop = '20px';
-refs.minute.style.flexDirection = 'column';
-
-refs.second.style.padding = '10px';
-refs.second.style.width = '50px';
-refs.second.style.borderRadius = '50%';
-refs.second.style.background = 'black';
-refs.second.style.display = 'flex';
-refs.second.style.marginTop = '20px';
-refs.second.style.flexDirection = 'column';
-
-refs.timer.style.fontSize = '16px';
-refs.timer.style.textAlign = 'center';
-refs.timer.style.fontWeight = '700';
-refs.timer.style.display = 'flex';
-refs.timer.style.color = 'violet';
-refs.timer.style.gap = '10px';
 
 const timer = {
   intervalId: null,
@@ -82,13 +43,10 @@ const timer = {
       const currentTime = Date.now();
       const deltaTime = startTime - currentTime;
       const time = convertMs(deltaTime);
+
       updateTimer(time);
-      if (
-        refs.day.textContent === '00' &&
-        refs.hour.textContent === '00' &&
-        refs.minute.textContent === '00' &&
-        refs.second.textContent === '00'
-      ) {
+      if (deltaTime <= 0) {
+        updateTimer();
         clearInterval(this.intervalId);
         this.isActive = false;
         Notiflix.Notify.success('Time is out');
@@ -97,7 +55,7 @@ const timer = {
   },
 };
 
-function updateTimer({ days, hours, minutes, seconds }) {
+function updateTimer({ days = 0, hours = 0, minutes = 0, seconds = 0 } = {}) {
   refs.day.textContent = `${days}`;
   refs.hour.textContent = `${hours}`;
   refs.minute.textContent = `${minutes}`;
